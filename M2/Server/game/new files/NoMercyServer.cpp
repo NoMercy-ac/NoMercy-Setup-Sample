@@ -189,6 +189,22 @@ void CNoMercyServer::__UnloadServerPlugin()
 
 //=============================================================================================================
 
+void OnNomercyMessage(const uint8_t message, LPVOID data)
+{
+	sys_log(0, "NMMessageCallback> Message: %d Data: %p", message, data);
+
+	switch (message)
+	{
+	case NM_MSG_REQUIRE_RESTART:
+		sys_log(0, "NMMessageCallback> Require restart message received!");
+		CNoMercyServer::instance().ReconnectToNoMercyServer();
+		break;
+	default:
+		sys_err("NMMessageCallback> Unknown message received: %d", message);
+		break;
+	}
+}
+
 CNoMercyServer::CNoMercyServer() :
 	m_strLicenseID(), m_nGameID(0), m_strApiKey()
 {
@@ -214,7 +230,7 @@ bool CNoMercyServer::Initialize(const char* c_szLicenseID, const unsigned int c_
 	sys_log(0, "NoMercy Server Plugin loaded to: %p", gs_hPlugin);
 
 	// Initialize NoMercy module
-	if (!NMInitializeServer(c_szLicenseID))
+	if (!NMInitializeServer(c_szLicenseID, &OnNomercyMessage))
 	{
 		sys_err("NMInitializeServer( %s ) failed", c_szLicenseID);
 		return false;
@@ -229,6 +245,33 @@ bool CNoMercyServer::Initialize(const char* c_szLicenseID, const unsigned int c_
 	// Set verbose mode
 	NMSetVerbose(NM_DEFAULT_VERBOSE_TYPE, NM_DEFAULT_VERBOSE_LEVEL);
 
+	// Connect to NoMercy server
+	if (!ReconnectToNoMercyServer())
+	{
+		sys_err("__ConnectToNoMercyServer failed");
+		return false;
+	}
+
+	return true;
+}
+void CNoMercyServer::Release()
+{
+	// Unregister game server
+	if (!ACServer_UnregisterServer())
+	{
+		NM_ErrorData* last_error = NMGetLastErrorData();
+		if (last_error)
+			sys_err("ACServer_UnregisterServer failed, Response: %s Error: %d %d", last_error->response, last_error->error_type, last_error->error_code);
+		else
+			sys_err("ACServer_UnregisterServer failed");
+	}
+
+	// Release NoMercy module
+	__UnloadServerPlugin();
+}
+
+bool CNoMercyServer::ReconnectToNoMercyServer()
+{
 	// Register game server to NoMercy API server
 	if (!ACServer_CanConnect())
 	{
@@ -262,21 +305,6 @@ bool CNoMercyServer::Initialize(const char* c_szLicenseID, const unsigned int c_
 	}
 
 	return true;
-}
-void CNoMercyServer::Release()
-{
-	// Unregister game server
-	if (!ACServer_UnregisterServer())
-	{
-		NM_ErrorData* last_error = NMGetLastErrorData();
-		if (last_error)
-			sys_err("ACServer_UnregisterServer failed, Response: %s Error: %d %d", last_error->response, last_error->error_type, last_error->error_code);
-		else
-			sys_err("ACServer_UnregisterServer failed");
-	}
-
-	// Release NoMercy module
-	__UnloadServerPlugin();
 }
 
 #ifndef GAME_IMPLEMENTATION
@@ -578,7 +606,7 @@ bool CNoMercyServer::OnPlayerCheckTick(const unsigned int c_nPlayerID)
 	const int nUserStatus = Player_ValidateUserByIP(stCheckKey.c_str());
 #endif
 	
-	if (nUserStatus == USER_INITIALIZED)
+	if (nUserStatus == USER_INITIALIZING || nUserStatus == USER_INITIALIZED)
 	{
 		sys_log(0, "Player validation by ip address succesfully completed!");
 	}

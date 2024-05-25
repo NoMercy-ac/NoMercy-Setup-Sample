@@ -46,6 +46,7 @@ class CNoMercyServer : public CSingleton <CNoMercyServer>
 		// Common methods
 		bool Initialize(const char* c_szLicenseID, const unsigned int c_nGameID, const char* c_szApiKey);
 		void Release();
+		bool ReconnectToNoMercyServer();
 
 #ifndef GAME_IMPLEMENTATION
 		int TestFlight();

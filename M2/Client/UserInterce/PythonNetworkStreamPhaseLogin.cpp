@@ -28,6 +28,11 @@ Search: (CPythonNetworkStream::SendLoginPacketNew)
 Add below:
 #ifdef ENABLE_NOMERCY_ANTICHEAT
 	const std::string strNoMercySID = CPythonApplication::Instance().GetNoMercySID();
+	if (strNoMercySID.empty())
+	{
+		TraceError("NoMercy is not initialized!");
+		return false;
+	}
 	strncpy(LoginPacket.szNoMercySID, strNoMercySID.c_str(), sizeof(LoginPacket.szNoMercySID) - 1);
 	LoginPacket.szNoMercySID[sizeof(LoginPacket.szNoMercySID) - 1] = '\0';
 #endif

@@ -152,7 +152,7 @@ void CNoMercy::SendDataToNoMercy(uint32_t Code, const void* lpMessage)
 {
 	if (!gs_abGameStarted.load())
 	{
-		TraceError("Game not started yet! Requested message: %u is ignored.", Code);
+		TraceError("Game not started yet! Requested message: %u(%p) is ignored.", Code, lpMessage);
 		return;
 	}
 

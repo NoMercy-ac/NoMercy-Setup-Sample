@@ -23,7 +23,8 @@ void DESC::BindCharacter(LPCHARACTER ch)
 
 Add below:
 #ifdef ENABLE_NOMERCY_SERVER
-	CNoMercyServer::instance().OnLoginPlayer(ch->GetPlayerID());
+	if (ch)
+		CNoMercyServer::instance().OnLoginPlayer(ch->GetPlayerID());
 #endif
 
 ---
