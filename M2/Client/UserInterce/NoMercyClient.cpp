@@ -6,6 +6,7 @@
 #include "PythonPlayer.h"
 #include "NoMercyClient.h"
 #include "PythonApplication.h"
+#include <atomic>
 
 #ifdef ENABLE_NOMERCY_ANTICHEAT
 
@@ -101,6 +102,8 @@ static bool __cdecl SendSequenceFunc()
 #endif
 }
 
+static std::atomic_bool gs_abGameStarted = false;
+
 // NoMercy message handler
 void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* lpParam)
 {
@@ -112,10 +115,20 @@ void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* l
 	{
 		CNoMercy::Instance().SetNoMercyMessageHandled();
 	}
-	else if (Code == NM_DATA_RECV_SESSION_ID)
+	else if (Code == NM_DATA_RECV_SESSION_ID && lpParam)
 	{
 		const SSessionIDCtx* c_pSIDctx = (const SSessionIDCtx*)lpParam;
 		CPythonApplication::Instance().SetNoMercySID(c_pSIDctx->szSessionID);
+	}
+	else if (Code == NM_SIGNAL && c_szMessage && *c_szMessage)
+	{
+		const auto c_ulMessage = std::strtoul(c_szMessage, nullptr, 10);
+		if (c_ulMessage == NM_GAME_STARTED)
+		{
+			gs_abGameStarted = true;
+
+			CNoMercy::Instance().SendClientFunctionsToNoMercy();
+		}
 	}
 }
 
@@ -137,12 +150,29 @@ void CNoMercy::FinalizeNoMercy()
 
 void CNoMercy::SendDataToNoMercy(uint32_t Code, const void* lpMessage)
 {
+	if (!gs_abGameStarted.load())
+	{
+		TraceError("Game not started yet! Requested message: %u is ignored.", Code);
+		return;
+	}
+
 	NM_ForwardMessage(Code, lpMessage);
 }
 
 void CNoMercy::OnGameTick()
 {
-//	SendDataToNoMercy(NM_SIGNAL, (void*)NM_SIG_GAME_POLL_EVENT);
+	if (!gs_abGameStarted.load())
+		return;
+
+	static DWORD s_dwLastTick = 0;
+	DWORD dwCurrentTick = GetTickCount();
+
+	if (dwCurrentTick - s_dwLastTick >= NOMERCY_TICK_INTERVAL)
+	{
+		SendDataToNoMercy(NM_SIGNAL, (void*)NM_SIG_GAME_POLL_EVENT);
+
+		s_dwLastTick = dwCurrentTick;
+	}
 }
 
 void CNoMercy::SendClientFunctionsToNoMercy()

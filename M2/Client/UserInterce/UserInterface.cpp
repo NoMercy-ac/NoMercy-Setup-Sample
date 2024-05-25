@@ -7,16 +7,6 @@ Add below:
 ---
 
 Search:
-	app->Initialize(hInstance);
-
-Add below:
-#ifdef ENABLE_NOMERCY_ANTICHEAT
-	CNoMercy::Instance().SendClientFunctionsToNoMercy();
-#endif
-
----
-
-Search:
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
