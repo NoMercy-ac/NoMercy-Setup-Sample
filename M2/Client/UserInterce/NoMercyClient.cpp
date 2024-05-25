@@ -127,6 +127,7 @@ void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* l
 		{
 			gs_abGameStarted = true;
 
+			CNoMercy::Instance().SendDataToNoMercy(NoMercy::NM_SIGNAL, (void*)NoMercy::NM_SIG_GAME_INIT);
 			CNoMercy::Instance().SendClientFunctionsToNoMercy();
 		}
 	}
