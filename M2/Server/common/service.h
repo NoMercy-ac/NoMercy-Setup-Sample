@@ -2,6 +2,10 @@ Add:
 
 #define ENABLE_NOMERCY_SERVER
 #ifdef ENABLE_NOMERCY_SERVER
+
+// Premium plan only server check
+// #define ENABLE_NOMERCY_PREMIUM_PLAN
+
 // Rest API based heartbeat check
 #define NOMERCY_HEARTBEAT_CHECK
 #define NOMERCY_HEARTBEAT_CHECK_INTERVAL 60 // in seconds

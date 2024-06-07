@@ -26,7 +26,7 @@ Search: (CPythonNetworkStream::SendLoginPacketNew)
 		LoginPacket.adwClientKey[i] = g_adwEncryptKey[i];
 
 Add below:
-#ifdef ENABLE_NOMERCY_ANTICHEAT
+#if defined(ENABLE_NOMERCY_ANTICHEAT) && defined(ENABLE_NOMERCY_PREMIUM_PLAN)
 	const std::string strNoMercySID = CPythonApplication::Instance().GetNoMercySID();
 	if (strNoMercySID.empty())
 	{

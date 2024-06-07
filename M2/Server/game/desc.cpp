@@ -39,7 +39,7 @@ DWORD DESC::GetLoginKey()
 }
 
 Add below:
-#ifdef ENABLE_NOMERCY_SERVER
+#if defined(ENABLE_NOMERCY_ANTICHEAT) && defined(ENABLE_NOMERCY_PREMIUM_PLAN)
 void DESC::SetNoMercySID(const char* c_pszSID)
 {
 	m_stNoMercySID = c_pszSID;

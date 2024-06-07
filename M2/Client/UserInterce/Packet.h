@@ -11,4 +11,6 @@ Search: (in TPacketCGLogin2)
     DWORD	adwClientKey[4];
 
 Add below:
+#if defined(ENABLE_NOMERCY_ANTICHEAT) && defined(ENABLE_NOMERCY_PREMIUM_PLAN)
     char	szNoMercySID[128 + 1];
+#endif

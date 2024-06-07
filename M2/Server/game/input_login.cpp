@@ -14,7 +14,7 @@ Search:
 #endif
 
 Add below:
-#ifdef ENABLE_NOMERCY_SERVER
+#if defined(ENABLE_NOMERCY_ANTICHEAT) && defined(ENABLE_NOMERCY_PREMIUM_PLAN)
 	d->SetNoMercySID(pinfo->szNoMercySID);
 #endif
 
