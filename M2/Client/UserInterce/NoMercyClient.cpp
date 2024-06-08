@@ -102,7 +102,7 @@ static bool __cdecl SendSequenceFunc()
 #endif
 }
 
-static std::atomic_bool gs_abGameStarted = false;
+static std::atomic <bool> gs_abGameStarted = false;
 
 // NoMercy message handler
 void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* lpParam)
@@ -115,11 +115,13 @@ void __stdcall OnNoMercyMessage(int Code, const char* c_szMessage, const void* l
 	{
 		CNoMercy::Instance().SetNoMercyMessageHandled();
 	}
+#if defined(ENABLE_NOMERCY_PREMIUM_PLAN)
 	else if (Code == NM_DATA_RECV_SESSION_ID && lpParam)
 	{
 		const SSessionIDCtx* c_pSIDctx = (const SSessionIDCtx*)lpParam;
 		CPythonApplication::Instance().SetNoMercySID(c_pSIDctx->szSessionID);
 	}
+#endif
 	else if (Code == NM_SIGNAL && c_szMessage && *c_szMessage)
 	{
 		const auto c_ulMessage = std::strtoul(c_szMessage, nullptr, 10);
