@@ -20,5 +20,7 @@ Add below:
 		return;
 	}
     
+#if defined(ENABLE_NOMERCY_PREMIUM_PLAN)
 	CNoMercy::Instance().SendDataToNoMercy(NoMercy::NM_SIGNAL, (void*)NoMercy::NM_SIG_HEARTBEAT_V1_SETUP);
+#endif
 #endif
