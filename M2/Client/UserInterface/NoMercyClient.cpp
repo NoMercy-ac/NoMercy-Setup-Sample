@@ -12,11 +12,19 @@
 
 #pragma comment(linker, "/ALIGN:0x10000")
 
-//#ifdef _DEBUG
-//	#pragma comment( lib, "NoMercy_Module_x86_d.lib" )
-//#else
-	#pragma comment( lib, "NoMercy_Module_x86.lib" )
-//#endif
+// #ifdef _DEBUG
+//     #ifdef _WIN64
+//         #pragma comment( lib, "NoMercy_x64_d.lib" )
+//     #else
+//         #pragma comment( lib, "NoMercy_x86_d.lib" )
+//     #endif
+// #else
+    #ifdef _WIN64
+        #pragma comment( lib, "NoMercy_x64.lib" )
+    #else
+        #pragma comment( lib, "NoMercy_x86.lib" )
+    #endif
+// #endif
 
 using namespace NoMercy;
 
