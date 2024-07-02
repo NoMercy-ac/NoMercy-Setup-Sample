@@ -14,15 +14,15 @@
 
 // #ifdef _DEBUG
 //     #ifdef _WIN64
-//         #pragma comment( lib, "NoMercy_x64_d.lib" )
+//         #pragma comment( lib, "NoMercy_Module_x64_d.lib" )
 //     #else
-//         #pragma comment( lib, "NoMercy_x86_d.lib" )
+//         #pragma comment( lib, "NoMercy_Module_x86_d.lib" )
 //     #endif
 // #else
     #ifdef _WIN64
-        #pragma comment( lib, "NoMercy_x64.lib" )
+        #pragma comment( lib, "NoMercy_Module_x64.lib" )
     #else
-        #pragma comment( lib, "NoMercy_x86.lib" )
+        #pragma comment( lib, "NoMercy_Module_x86.lib" )
     #endif
 // #endif
 
